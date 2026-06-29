@@ -9,6 +9,9 @@ module "eks" {
   subnet_ids               = module.vpc.private_subnets
   control_plane_subnet_ids = module.vpc.public_subnets
 
+  # Explicitly enable public access to the Kubernetes API
+  cluster_endpoint_public_access = true
+
   # EKS Managed Node Group
   eks_managed_node_groups = {
     general = {

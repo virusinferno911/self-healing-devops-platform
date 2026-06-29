@@ -1,0 +1,12 @@
+{
+  "name": "ghost-healing-demo",
+  "version": "1.0.0",
+  "description": "Target app for self-healing infrastructure demo",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ghost-app-deployment
+  labels:
+    app: ghost-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ghost-app
+  template:
+    metadata:
+      labels:
+        app: ghost-app
+    spec:
+      containers:
+      - name: ghost-app
+        image: ecr_repository_url = "297155701247.dkr.ecr.us-east-1.amazonaws.com/ghost-healing-app"
+        ports:
+        - containerPort: 3000
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
