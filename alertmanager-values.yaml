@@ -1,0 +1,45 @@
+alertmanager:
+  config:
+    global:
+      resolve_timeout: 5m
+      slack_api_url: "YOUR_SLACK_WEBHOOK_URL_HERE"
+    route:
+      group_by: ['namespace']
+      group_wait: 10s 
+      group_interval: 1m
+      repeat_interval: 1h
+      receiver: 'slack-alerts'
+      routes:
+      - receiver: 'null'
+        matchers:
+          - alertname = "Watchdog"
+      - receiver: 'slack-alerts'
+        continue: true
+    receivers:
+    - name: 'null'
+    - name: 'slack-alerts'
+      slack_configs:
+      - channel: '#aws-alerts'
+        send_resolved: true
+        title: '[{{ .Status | toUpper }}] 🚨 Kubernetes Cluster Alert'
+        text: >-
+          {{ range .Alerts }}
+            *Alert:* {{ .Labels.alertname }}
+            *Severity:* `{{ .Labels.severity }}`
+            *Description:* {{ .Annotations.description }}
+            *Pod:* {{ .Labels.pod }}
+          {{ end }}
+
+additionalPrometheusRulesMap:
+  fast-crash-alert:
+    groups:
+      - name: custom-app-alerts
+        rules:
+          - alert: GhostAppCrashing
+            expr: changes(kube_pod_container_status_restarts_total{namespace="default"}[5m]) > 0
+            for: 1m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Ghost Node.js App Failure"
+              description: "Pod {{ $labels.pod }} has restarted unexpectedly. Immediate support intervention required."
